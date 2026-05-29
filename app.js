@@ -7,13 +7,12 @@ const cards = require('./routes/cards');
 const app = express();
 const { PORT = 3000 } = process.env;
 
-mongoose.connect('mongodb://localhost:27017/aroundb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
+mongoose.connect('mongodb://localhost:27017/aroundb')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.error('Error connecting to MongoDB:', err));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/users', users);
 app.use('/cards', cards);
