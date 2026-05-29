@@ -1,28 +1,32 @@
 const User = require('../models/users');
 
+const BAD_REQUEST = 400;
+const NOT_FOUND = 404;
+const INTERNAL_SERVER_ERROR = 500;
+
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Internal server error' }));
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.id)
-    .onFail(() => {
+    .orFail(() => {
       const error = new Error('User not found');
-      error.statusCode = 404;
+      error.statusCode = NOT_FOUND;
       throw error;
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid user ID' });
+        return res.status(BAD_REQUEST).send({ message: 'Invalid user ID' });
       }
-      if (err.statusCode === 404) {
-        return res.status(404).send({ message: err.message });
+      if (err.statusCode === NOT_FOUND) {
+        return res.status(NOT_FOUND).send({ message: err.message });
       }
 
-      return res.status(500).send({ message: 'Internal server error' });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Internal server error' });
     });
 };
 
@@ -32,8 +36,8 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Invalid user data' });
+        return res.status(BAD_REQUEST).send({ message: 'Invalid user data' });
       }
-      return res.status(500).send({ message: 'Internal server error' });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Internal server error' });
     });
 };
