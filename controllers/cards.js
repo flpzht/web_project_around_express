@@ -21,7 +21,8 @@ module.exports.createCard = (req, res) => {
       }
       return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Internal server error' });
     });
-}
+};
+
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
     .then((card) => {
