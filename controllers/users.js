@@ -1,5 +1,6 @@
 const User = require('../models/users');
 
+const CREATED = 201;
 const BAD_REQUEST = 400;
 const NOT_FOUND = 404;
 const INTERNAL_SERVER_ERROR = 500;
@@ -7,7 +8,7 @@ const INTERNAL_SERVER_ERROR = 500;
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Internal server error' }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Internal server error' }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -33,7 +34,7 @@ module.exports.getUserById = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(CREATED).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(BAD_REQUEST).send({ message: 'Invalid user data' });
